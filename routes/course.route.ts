@@ -10,4 +10,11 @@ courseRouter.post(
   uploadCourse
 );
 
+courseRouter.put(
+  "/edit-course/:id",
+  isAuthenticated,
+  authorizeRoles("user"),
+  uploadCourse
+);
+
 export default courseRouter;
