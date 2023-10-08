@@ -18,6 +18,13 @@ interface ILink extends Document {
   url: string;
 }
 
+interface ITeacher extends Document {
+  fullName: string;
+  profileImage: object;
+  designation: string;
+  experience: string;
+}
+
 interface ICourseData extends Document {
   title: string;
   description: string;
@@ -46,7 +53,15 @@ interface ICourse extends Document {
   courseData: ICourseData[];
   ratings?: number;
   purchased?: number;
+  teacher: ITeacher;
 }
+
+const teacherSchema = new Schema<ITeacher>({
+  fullName: String,
+  profileImage: String,
+  designation: String,
+  experience: String,
+});
 
 const reviewSchema = new Schema<IReview>({
   user: Object,
@@ -118,6 +133,7 @@ const courseSchema = new Schema<ICourse>({
     type: String,
     required: true,
   },
+  teacher: teacherSchema,
   benefits: [{ title: String }],
   prerequisites: [{ title: String }],
   reviews: [reviewSchema],

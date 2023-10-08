@@ -61,7 +61,7 @@ export const editCourse = CatchAsyncError(
         { new: true }
       );
 
-      res.send(201).json({
+      res.sendStatus(201).json({
         success: true,
         course,
       });
