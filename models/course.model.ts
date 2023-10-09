@@ -56,7 +56,7 @@ interface ICourse extends Document {
   teacher: ITeacher;
 }
 
-const teacherSchema = new Schema<ITeacher>({
+export const teacherSchema = new Schema<ITeacher>({
   fullName: String,
   profileImage: String,
   designation: String,
@@ -133,7 +133,10 @@ const courseSchema = new Schema<ICourse>({
     type: String,
     required: true,
   },
-  teacher: teacherSchema,
+  teacher: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
+  },
   benefits: [{ title: String }],
   prerequisites: [{ title: String }],
   reviews: [reviewSchema],

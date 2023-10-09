@@ -61,6 +61,9 @@ export const editCourse = CatchAsyncError(
         { new: true }
       );
 
+      // update redis also
+      await redis.set(courseId, JSON.stringify(course));
+
       res.sendStatus(201).json({
         success: true,
         course,
@@ -117,15 +120,19 @@ export const getAllCourses = CatchAsyncError(
           course,
         });
       } else {
-        const courses = await CourseModel.find().select(
-          "-courseData.videoUrl -courseData.suggestions -courseData.questions -courseData.links"
-        );
+        const courses = await CourseModel.find()
+          .populate("teacher")
+          .select(
+            "-courseData.videoUrl -courseData.suggestions -courseData.questions -courseData.links"
+          );
 
         await redis.set("allCourses", JSON.stringify(courses));
 
-        res.status(200).json({
+        res.status(201).json({
           success: true,
           courses,
+
+          
         });
       }
     } catch (error: any) {

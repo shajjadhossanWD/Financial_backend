@@ -303,12 +303,13 @@ export const socialAuth = CatchAsyncError(
 interface IUpdateUserInfo {
   name?: string;
   email?: string;
+  teacherDetails?: object;
 }
 
 export const updateUserInfo = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { email, name } = req.body as IUpdateUserInfo;
+      const { email, name, teacherDetails } = req.body as IUpdateUserInfo;
 
       const userId = req.user?._id;
 
@@ -324,6 +325,10 @@ export const updateUserInfo = CatchAsyncError(
 
       if (name && user) {
         user.name = name;
+      }
+
+      if (teacherDetails && user) {
+        user.teacherDetails = teacherDetails;
       }
 
       await user?.save();
