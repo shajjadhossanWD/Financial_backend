@@ -64,7 +64,9 @@ export const editCourse = CatchAsyncError(
       // update redis also
       await redis.set(courseId, JSON.stringify(course));
 
-      res.sendStatus(201).json({
+      await course?.save();
+
+      res.status(201).json({
         success: true,
         course,
       });
@@ -131,8 +133,6 @@ export const getAllCourses = CatchAsyncError(
         res.status(201).json({
           success: true,
           courses,
-
-          
         });
       }
     } catch (error: any) {

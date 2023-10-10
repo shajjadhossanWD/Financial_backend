@@ -4,8 +4,9 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "start": "node server",
+    "start": "node dist/server.js",
     "dev": "ts-node-dev --respawn --transpile-only server.ts",
+    "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Mehedi Hassan",

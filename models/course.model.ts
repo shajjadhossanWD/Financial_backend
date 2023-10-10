@@ -1,4 +1,5 @@
 import mongoose, { Document, Model, Schema } from "mongoose";
+import customAutoIncrementId from "../middleware/customAutoIncrementId";
 
 interface IComment extends Document {
   user: object;
@@ -39,6 +40,7 @@ interface ICourseData extends Document {
 }
 
 interface ICourse extends Document {
+  id: string;
   name: string;
   description: string;
   price: number;
@@ -54,6 +56,7 @@ interface ICourse extends Document {
   ratings?: number;
   purchased?: number;
   teacher: ITeacher;
+  category: string;
 }
 
 export const teacherSchema = new Schema<ITeacher>({
@@ -95,6 +98,10 @@ const courseDataSchema = new Schema<ICourseData>({
 });
 
 const courseSchema = new Schema<ICourse>({
+  id: {
+    type: String,
+    unique: true,
+  },
   name: {
     type: String,
     required: true,
@@ -125,6 +132,10 @@ const courseSchema = new Schema<ICourse>({
     type: String,
     required: true,
   },
+  category: {
+    type: String,
+    required: true,
+  },
   level: {
     type: String,
     required: true,
@@ -150,6 +161,9 @@ const courseSchema = new Schema<ICourse>({
     default: 0,
   },
 });
+
+// Apply the middleware to the schema with a prefix
+courseSchema.pre("save", customAutoIncrementId("id", 100, "C"));
 
 const CourseModel: Model<ICourse> = mongoose.model("Course", courseSchema);
 
