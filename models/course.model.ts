@@ -41,7 +41,7 @@ interface ICourseData extends Document {
 
 interface ICourse extends Document {
   id: string;
-  name: string;
+  title: string;
   description: string;
   price: number;
   estimatedPrice: number;
@@ -53,7 +53,7 @@ interface ICourse extends Document {
   prerequisites: { title: string }[];
   reviews: IReview[];
   courseData: ICourseData[];
-  ratings?: number;
+  avgRating?: number;
   purchased?: number;
   teacher: ITeacher;
   category: string;
@@ -102,7 +102,7 @@ const courseSchema = new Schema<ICourse>({
     type: String,
     unique: true,
   },
-  name: {
+  title: {
     type: String,
     required: true,
   },
@@ -119,14 +119,15 @@ const courseSchema = new Schema<ICourse>({
     required: true,
   },
   thumbnail: {
-    pubic_id: {
-      type: String,
-      // required: true,
-    },
-    url: {
-      type: String,
-      // required: true,
-    },
+    type: String,
+    // pubic_id: {
+    //   type: String,
+    //   // required: true,
+    // },
+    // url: {
+    //   type: String,
+    //   // required: true,
+    // },
   },
   tags: {
     type: String,
@@ -152,7 +153,7 @@ const courseSchema = new Schema<ICourse>({
   prerequisites: [{ title: String }],
   reviews: [reviewSchema],
   courseData: [courseDataSchema],
-  ratings: {
+  avgRating: {
     type: Number,
     default: 0,
   },

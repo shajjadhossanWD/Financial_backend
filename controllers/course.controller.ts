@@ -35,23 +35,24 @@ export const uploadCourse = CatchAsyncError(
 export const editCourse = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const data = req.body;
-      const thumbnail = data.thumbnail;
-
-      if (thumbnail) {
-        await cloudinary.v2.uploader.destroy(thumbnail.public_id);
-
-        const myCloud = await cloudinary.v2.uploader.upload(thumbnail, {
-          folder: "courses",
-        });
-
-        data.thumbnail = {
-          public_id: myCloud.public_id,
-          url: myCloud.secure_url,
-        };
-      }
-
       const courseId = req.params.id;
+      const data = req.body;
+
+      // Finding the course by ID
+      const courseByID = await CourseModel.findById(courseId);
+
+      if (courseByID?.thumbnail) {
+        const publicId = (courseByID.thumbnail as any)
+          .split("/")
+          .pop()
+          .split(".")[0];
+
+        await cloudinary.v2.uploader.destroy(publicId);
+
+        if (req.file) {
+          data.thumbnail = req.file.path;
+        }
+      }
 
       const course = await CourseModel.findByIdAndUpdate(
         courseId,
@@ -63,8 +64,6 @@ export const editCourse = CatchAsyncError(
 
       // update redis also
       await redis.set(courseId, JSON.stringify(course));
-
-      await course?.save();
 
       res.status(201).json({
         success: true,
@@ -125,7 +124,7 @@ export const getAllCourses = CatchAsyncError(
         const courses = await CourseModel.find()
           .populate("teacher")
           .select(
-            "-courseData.videoUrl -courseData.suggestions -courseData.questions -courseData.links"
+            "-courseData -description -tags -level -demoUrl -benefits -prerequisites -reviews -purchased"
           );
 
         await redis.set("allCourses", JSON.stringify(courses));
