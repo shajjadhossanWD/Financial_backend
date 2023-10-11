@@ -2,6 +2,7 @@ require("dotenv").config();
 import mongoose, { Document, Model, Schema } from "mongoose";
 import bcrypt from "bcryptjs";
 import jwt, { Secret } from "jsonwebtoken";
+import { teacherSchema } from "./course.model";
 
 const emailRegexPattern: RegExp =
   /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
@@ -16,6 +17,7 @@ export interface IUser extends Document {
   };
   role: string;
   isVerified: boolean;
+  teacherDetails?: object;
   courses: Array<{ courseId: string }>;
   comparePassword: (password: string) => Promise<boolean>;
   SignAccessToken: () => string;
@@ -62,6 +64,7 @@ const userSchema: Schema<IUser> = new mongoose.Schema(
         courseId: String,
       },
     ],
+    teacherDetails: teacherSchema,
   },
   {
     timestamps: true,

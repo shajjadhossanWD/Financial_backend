@@ -1,4 +1,5 @@
 import mongoose, { Document, Model, Schema } from "mongoose";
+import customAutoIncrementId from "../middleware/customAutoIncrementId";
 
 interface IComment extends Document {
   user: object;
@@ -18,6 +19,13 @@ interface ILink extends Document {
   url: string;
 }
 
+interface ITeacher extends Document {
+  fullName: string;
+  profileImage: object;
+  designation: string;
+  experience: string;
+}
+
 interface ICourseData extends Document {
   title: string;
   description: string;
@@ -32,6 +40,7 @@ interface ICourseData extends Document {
 }
 
 interface ICourse extends Document {
+  id: string;
   name: string;
   description: string;
   price: number;
@@ -46,7 +55,16 @@ interface ICourse extends Document {
   courseData: ICourseData[];
   ratings?: number;
   purchased?: number;
+  teacher: ITeacher;
+  category: string;
 }
+
+export const teacherSchema = new Schema<ITeacher>({
+  fullName: String,
+  profileImage: String,
+  designation: String,
+  experience: String,
+});
 
 const reviewSchema = new Schema<IReview>({
   user: Object,
@@ -80,6 +98,10 @@ const courseDataSchema = new Schema<ICourseData>({
 });
 
 const courseSchema = new Schema<ICourse>({
+  id: {
+    type: String,
+    unique: true,
+  },
   name: {
     type: String,
     required: true,
@@ -110,6 +132,10 @@ const courseSchema = new Schema<ICourse>({
     type: String,
     required: true,
   },
+  category: {
+    type: String,
+    required: true,
+  },
   level: {
     type: String,
     required: true,
@@ -117,6 +143,10 @@ const courseSchema = new Schema<ICourse>({
   demoUrl: {
     type: String,
     required: true,
+  },
+  teacher: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
   },
   benefits: [{ title: String }],
   prerequisites: [{ title: String }],
@@ -131,6 +161,9 @@ const courseSchema = new Schema<ICourse>({
     default: 0,
   },
 });
+
+// Apply the middleware to the schema with a prefix
+courseSchema.pre("save", customAutoIncrementId("id", 100, "C"));
 
 const CourseModel: Model<ICourse> = mongoose.model("Course", courseSchema);
 
