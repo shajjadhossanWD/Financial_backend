@@ -1,4 +1,4 @@
-import mongoose, { Document, Model, Schema } from "mongoose";
+import mongoose, { Document, Model, ObjectId, Schema } from "mongoose";
 import customAutoIncrementId from "../middleware/customAutoIncrementId";
 
 interface IComment extends Document {
@@ -26,34 +26,39 @@ interface ITeacher extends Document {
   experience: string;
 }
 
-interface ICourseData extends Document {
+interface IElementData extends Document {
   title: string;
-  description: string;
-  videoUrl: string;
-  videoThumbnail: object;
-  videoSection: string;
-  videoLength: number;
-  videoPlayer: string;
+  type: string;
+  content: string;
+  duration?: number;
+  videoPlayer?: string;
   links: ILink;
   suggestions: string;
   questions: IComment[];
+  quiz?: ObjectId;
+}
+
+interface IChapter extends Document {
+  title: string;
+  elements: IElementData[];
+  totalDuration: string;
 }
 
 interface ICourse extends Document {
   id: string;
-  name: string;
+  title: string;
   description: string;
   price: number;
   estimatedPrice: number;
   thumbnail: object;
   tags: string;
   level: string;
-  demoUrl: string;
-  benefits: { title: string }[];
+  demoVideo: string;
+  keyPoints: { title: string }[];
   prerequisites: { title: string }[];
   reviews: IReview[];
-  courseData: ICourseData[];
-  ratings?: number;
+  chapter: IChapter[];
+  avgRating?: number;
   purchased?: number;
   teacher: ITeacher;
   category: string;
@@ -86,23 +91,44 @@ const commentSchema = new Schema<IComment>({
   questionReplies: Object,
 });
 
-const courseDataSchema = new Schema<ICourseData>({
-  videoUrl: String,
-  videoSection: String,
-  description: String,
-  videoLength: Number,
+const elementDataSchema = new Schema<IElementData>({
+  title: String,
+  type: {
+    type: String,
+    required: true,
+    enum: ["video", "document", "quiz"],
+  },
+  content: String,
+  duration: {
+    type: String,
+    default: "5 Min",
+  },
   videoPlayer: String,
   links: [linkSchema],
   suggestions: String,
   questions: [commentSchema],
+  quiz: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Quiz",
+  },
+});
+
+const chapterSchema = new Schema<IChapter>({
+  title: String,
+  elements: [elementDataSchema],
+  totalDuration: {
+    type: String,
+    default: "30 Min",
+  },
 });
 
 const courseSchema = new Schema<ICourse>({
   id: {
     type: String,
     unique: true,
+    index: true,
   },
-  name: {
+  title: {
     type: String,
     required: true,
   },
@@ -119,14 +145,15 @@ const courseSchema = new Schema<ICourse>({
     required: true,
   },
   thumbnail: {
-    pubic_id: {
-      type: String,
-      // required: true,
-    },
-    url: {
-      type: String,
-      // required: true,
-    },
+    type: String,
+    // pubic_id: {
+    //   type: String,
+    //   // required: true,
+    // },
+    // url: {
+    //   type: String,
+    //   // required: true,
+    // },
   },
   tags: {
     type: String,
@@ -140,7 +167,7 @@ const courseSchema = new Schema<ICourse>({
     type: String,
     required: true,
   },
-  demoUrl: {
+  demoVideo: {
     type: String,
     required: true,
   },
@@ -148,11 +175,11 @@ const courseSchema = new Schema<ICourse>({
     type: Schema.Types.ObjectId,
     ref: "User",
   },
-  benefits: [{ title: String }],
+  keyPoints: [{ title: String }],
   prerequisites: [{ title: String }],
   reviews: [reviewSchema],
-  courseData: [courseDataSchema],
-  ratings: {
+  chapter: [chapterSchema],
+  avgRating: {
     type: Number,
     default: 0,
   },

@@ -304,12 +304,13 @@ interface IUpdateUserInfo {
   name?: string;
   email?: string;
   teacherDetails?: object;
+  role?: string;
 }
 
 export const updateUserInfo = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { email, name, teacherDetails } = req.body as IUpdateUserInfo;
+      const { email, name, teacherDetails, role } = req.body as IUpdateUserInfo;
 
       const userId = req.user?._id;
 
@@ -325,6 +326,10 @@ export const updateUserInfo = CatchAsyncError(
 
       if (name && user) {
         user.name = name;
+      }
+
+      if (role && user) {
+        user.role = role;
       }
 
       if (teacherDetails && user) {

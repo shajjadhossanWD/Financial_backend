@@ -43,25 +43,25 @@ exports.uploadCourse = (0, catchAsyncError_1.CatchAsyncError)((req, res, next) =
 // edit course
 exports.editCourse = (0, catchAsyncError_1.CatchAsyncError)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const data = req.body;
-        const thumbnail = data.thumbnail;
-        if (thumbnail) {
-            yield cloudinary_1.default.v2.uploader.destroy(thumbnail.public_id);
-            const myCloud = yield cloudinary_1.default.v2.uploader.upload(thumbnail, {
-                folder: "courses",
-            });
-            data.thumbnail = {
-                public_id: myCloud.public_id,
-                url: myCloud.secure_url,
-            };
-        }
         const courseId = req.params.id;
+        const data = req.body;
+        // Finding the course by ID
+        const courseByID = yield course_model_1.default.findById(courseId);
+        if (courseByID === null || courseByID === void 0 ? void 0 : courseByID.thumbnail) {
+            const publicId = courseByID.thumbnail
+                .split("/")
+                .pop()
+                .split(".")[0];
+            yield cloudinary_1.default.v2.uploader.destroy(publicId);
+            if (req.file) {
+                data.thumbnail = req.file.path;
+            }
+        }
         const course = yield course_model_1.default.findByIdAndUpdate(courseId, {
             $set: data,
         }, { new: true });
         // update redis also
         yield redis_1.redis.set(courseId, JSON.stringify(course));
-        yield (course === null || course === void 0 ? void 0 : course.save());
         res.status(201).json({
             success: true,
             course,
@@ -110,7 +110,7 @@ exports.getAllCourses = (0, catchAsyncError_1.CatchAsyncError)((req, res, next) 
         else {
             const courses = yield course_model_1.default.find()
                 .populate("teacher")
-                .select("-courseData.videoUrl -courseData.suggestions -courseData.questions -courseData.links");
+                .select("-courseData -description -tags -level -demoUrl -benefits -prerequisites -reviews -purchased");
             yield redis_1.redis.set("allCourses", JSON.stringify(courses));
             res.status(201).json({
                 success: true,

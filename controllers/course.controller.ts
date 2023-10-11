@@ -36,23 +36,24 @@ export const uploadCourse = CatchAsyncError(
 export const editCourse = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const data = req.body;
-      const thumbnail = data.thumbnail;
-
-      if (thumbnail) {
-        await cloudinary.v2.uploader.destroy(thumbnail.public_id);
-
-        const myCloud = await cloudinary.v2.uploader.upload(thumbnail, {
-          folder: "courses",
-        });
-
-        data.thumbnail = {
-          public_id: myCloud.public_id,
-          url: myCloud.secure_url,
-        };
-      }
-
       const courseId = req.params.id;
+      const data = req.body;
+
+      // Finding the course by ID
+      const courseByID = await CourseModel.findById(courseId);
+
+      if (courseByID?.thumbnail) {
+        const publicId = (courseByID.thumbnail as any)
+          .split("/")
+          .pop()
+          .split(".")[0];
+
+        await cloudinary.v2.uploader.destroy(publicId);
+
+        if (req.file) {
+          data.thumbnail = req.file.path;
+        }
+      }
 
       const course = await CourseModel.findByIdAndUpdate(
         courseId,
@@ -64,8 +65,6 @@ export const editCourse = CatchAsyncError(
 
       // update redis also
       await redis.set(courseId, JSON.stringify(course));
-
-      await course?.save();
 
       res.status(201).json({
         success: true,
@@ -81,8 +80,8 @@ export const editCourse = CatchAsyncError(
 export const getSingleCourse = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const courseId = req.params.id;
-      const isCacheExist = await redis.get(courseId);
+      const customCourseId = req.params.id;
+      const isCacheExist = await redis.get(customCourseId);
 
       if (isCacheExist) {
         const course = JSON.parse(isCacheExist);
@@ -92,11 +91,15 @@ export const getSingleCourse = CatchAsyncError(
           course,
         });
       } else {
-        const course = await CourseModel.findById(req.params.id).select(
+        const course = await CourseModel.findById(customCourseId).select(
           "-courseData.videoUrl -courseData.suggestions -courseData.questions -courseData.links"
         );
 
-        await redis.set(courseId, JSON.stringify(course));
+        if (!course) {
+          return res.status(404).json({ message: "Course not found" });
+        }
+
+        await redis.set(customCourseId, JSON.stringify(course));
 
         res.status(200).json({
           success: true,
@@ -126,7 +129,7 @@ export const getAllCourses = CatchAsyncError(
         const courses = await CourseModel.find()
           .populate("teacher")
           .select(
-            "-courseData.videoUrl -courseData.suggestions -courseData.questions -courseData.links"
+            "-courseData -description -tags -level -demoUrl -benefits -prerequisites -reviews -purchased"
           );
 
         await redis.set("allCourses", JSON.stringify(courses));
@@ -162,7 +165,7 @@ export const getCourseByUser = CatchAsyncError(
 
       const course = await CourseModel.findById(courseId);
 
-      const content = course?.courseData;
+      const content = course?.chapter;
 
       res.status(200).json({
         success: true,
@@ -182,6 +185,8 @@ interface IAddQuestionData {
   contentId: string;
 }
 
+// add question
+/*
 export const addQuestion = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -192,7 +197,7 @@ export const addQuestion = CatchAsyncError(
         return next(new ErrorHandler("Invalid content id", 400));
       }
 
-      const courseContent = course?.courseData?.find(
+      const courseContent = course?.chapter?.elements?.find(
         (item: any) => item._id === contentId
       );
 
@@ -222,3 +227,4 @@ export const addQuestion = CatchAsyncError(
     }
   }
 );
+*/

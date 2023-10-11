@@ -67,7 +67,7 @@ const courseSchema = new mongoose_1.Schema({
         type: String,
         unique: true,
     },
-    name: {
+    title: {
         type: String,
         required: true,
     },
@@ -84,14 +84,15 @@ const courseSchema = new mongoose_1.Schema({
         required: true,
     },
     thumbnail: {
-        pubic_id: {
-            type: String,
-            // required: true,
-        },
-        url: {
-            type: String,
-            // required: true,
-        },
+        type: String,
+        // pubic_id: {
+        //   type: String,
+        //   // required: true,
+        // },
+        // url: {
+        //   type: String,
+        //   // required: true,
+        // },
     },
     tags: {
         type: String,
@@ -117,7 +118,7 @@ const courseSchema = new mongoose_1.Schema({
     prerequisites: [{ title: String }],
     reviews: [reviewSchema],
     courseData: [courseDataSchema],
-    ratings: {
+    avgRating: {
         type: Number,
         default: 0,
     },

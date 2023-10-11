@@ -12,11 +12,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getAllTeacher = void 0;
+exports.getSingleTeacher = exports.uploadTeacher = exports.getAllTeacher = void 0;
 require("dotenv").config();
 const teacher_model_1 = __importDefault(require("../models/teacher.model"));
 const ErrorHandler_1 = __importDefault(require("../utils/ErrorHandler"));
 const catchAsyncError_1 = require("../middleware/catchAsyncError");
+const teacher_service_1 = require("../services/teacher.service");
 exports.getAllTeacher = (0, catchAsyncError_1.CatchAsyncError)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const teachers = yield teacher_model_1.default.find().lean();
@@ -27,6 +28,30 @@ exports.getAllTeacher = (0, catchAsyncError_1.CatchAsyncError)((req, res, next) 
         res.status(200).json({
             success: true,
             teachers,
+        });
+    }
+    catch (error) {
+        return next(new ErrorHandler_1.default(error.message, 400));
+    }
+}));
+// create teacher
+exports.uploadTeacher = (0, catchAsyncError_1.CatchAsyncError)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const data = req.body;
+        (0, teacher_service_1.createTeacher)(data, res, next);
+    }
+    catch (error) {
+        return next(new ErrorHandler_1.default(error.message, 400));
+    }
+}));
+// get teacher by id
+exports.getSingleTeacher = (0, catchAsyncError_1.CatchAsyncError)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const teacherId = req.params.id;
+        const teacher = yield teacher_model_1.default.findById(teacherId).lean();
+        res.status(200).json({
+            success: true,
+            teacher,
         });
     }
     catch (error) {

@@ -1,7 +1,13 @@
 import express from "express";
-import { getAllTeacher } from "../controllers/teacher.controller";
+import {
+  getAllTeacher,
+  getSingleTeacher,
+  uploadTeacher,
+} from "../controllers/teacher.controller";
 const teacherRouter = express.Router();
 
-teacherRouter.get("/get-teachers", getAllTeacher);
+teacherRouter.get("/teachers", getAllTeacher);
+teacherRouter.post("/teachers", uploadTeacher);
+teacherRouter.get("/teachers/:id", getSingleTeacher);
 
 export default teacherRouter;

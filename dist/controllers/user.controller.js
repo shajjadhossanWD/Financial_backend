@@ -208,7 +208,7 @@ exports.socialAuth = (0, catchAsyncError_1.CatchAsyncError)((req, res, next) => 
 exports.updateUserInfo = (0, catchAsyncError_1.CatchAsyncError)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _c;
     try {
-        const { email, name, teacherDetails } = req.body;
+        const { email, name, teacherDetails, role } = req.body;
         const userId = (_c = req.user) === null || _c === void 0 ? void 0 : _c._id;
         const user = yield user_model_1.default.findById(userId);
         if (email && user) {
@@ -220,6 +220,9 @@ exports.updateUserInfo = (0, catchAsyncError_1.CatchAsyncError)((req, res, next)
         }
         if (name && user) {
             user.name = name;
+        }
+        if (role && user) {
+            user.role = role;
         }
         if (teacherDetails && user) {
             user.teacherDetails = teacherDetails;

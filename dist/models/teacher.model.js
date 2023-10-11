@@ -42,23 +42,11 @@ const TeacherSchema = new mongoose_1.Schema({
         required: true,
         unique: true,
     },
-    password: {
-        type: String,
-        required: true,
-    },
     phoneNumber: {
         type: Number,
-        required: true,
+        // required: true,
     },
     designation: {
-        type: String,
-        required: true,
-    },
-    dateOfBirth: {
-        type: Date,
-        required: true,
-    },
-    institute: {
         type: String,
         required: true,
     },
@@ -66,34 +54,7 @@ const TeacherSchema = new mongoose_1.Schema({
         type: String,
         required: true,
     },
-    nidPassport: {
-        type: String,
-        required: true,
-    },
     profileImage: {
-        type: String,
-        // required: true,
-    },
-    certificate: {
-        type: String,
-        // required: true,
-    },
-    bankInfo: {
-        bankName: {
-            type: String,
-        },
-        branchName: {
-            type: String,
-        },
-        accountNumber: {
-            type: String,
-        },
-    },
-    address: {
-        type: String,
-        required: true,
-    },
-    signature: {
         type: String,
         // required: true,
     },
@@ -102,4 +63,5 @@ const TeacherSchema = new mongoose_1.Schema({
 });
 // Apply the middleware to the schema with a prefix
 TeacherSchema.pre("save", (0, customAutoIncrementId_1.default)("id", 100, "T"));
-exports.default = mongoose_1.default.model("Teacher", TeacherSchema);
+const teacherModel = mongoose_1.default.model("Teacher", TeacherSchema);
+exports.default = teacherModel;

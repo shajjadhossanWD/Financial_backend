@@ -1,6 +1,5 @@
 import express from "express";
 import {
-  addQuestion,
   editCourse,
   getAllCourses,
   getCourseByUser,
@@ -8,6 +7,7 @@ import {
   uploadCourse,
 } from "../controllers/course.controller";
 import { authorizeRoles, isAuthenticated } from "../middleware/auth";
+import upload from "../middleware/upload";
 const courseRouter = express.Router();
 
 courseRouter.post(
@@ -17,19 +17,20 @@ courseRouter.post(
   uploadCourse
 );
 
-courseRouter.put(
-  "/edit-course/:id",
-  isAuthenticated,
-  authorizeRoles("user"),
-  editCourse
-);
+courseRouter.get("/courses", getAllCourses);
 
-courseRouter.get("/get-course/:id", getSingleCourse);
-
-courseRouter.get("/get-courses", getAllCourses);
+// courseRouter.put("/add-questions", isAuthenticated, addQuestion);
 
 courseRouter.get("/get-course-content/:id", isAuthenticated, getCourseByUser);
 
-courseRouter.put("/add-questions", isAuthenticated, addQuestion);
+courseRouter.get("/courses/:id", getSingleCourse);
+
+courseRouter.patch(
+  "/edit-course/:id",
+  isAuthenticated,
+  authorizeRoles("user"),
+  upload.single("thumbnail"),
+  editCourse
+);
 
 export default courseRouter;
