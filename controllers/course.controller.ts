@@ -14,16 +14,16 @@ export const uploadCourse = CatchAsyncError(
       const data = req.body;
       const thumbnail = data.thumbnail;
 
-      if (thumbnail) {
-        const myCloud = await cloudinary.v2.uploader.upload(thumbnail, {
-          folder: "courses",
-        });
+      // if (thumbnail) {
+      //   const myCloud = await cloudinary.v2.uploader.upload(thumbnail, {
+      //     folder: "courses",
+      //   });
 
-        data.thumbnail = {
-          public_id: myCloud.public_id,
-          url: myCloud.secure_url,
-        };
-      }
+      //   data.thumbnail = {
+      //     public_id: myCloud.public_id,
+      //     url: myCloud.secure_url,
+      //   };
+      // }
 
       createCourse(data, res, next);
     } catch (error: any) {
@@ -91,9 +91,7 @@ export const getSingleCourse = CatchAsyncError(
           course,
         });
       } else {
-        const course = await CourseModel.findById(customCourseId).select(
-          "-courseData.videoUrl -courseData.suggestions -courseData.questions -courseData.links"
-        );
+        const course = await CourseModel.findById(customCourseId);
 
         if (!course) {
           return res.status(404).json({ message: "Course not found" });
@@ -129,7 +127,7 @@ export const getAllCourses = CatchAsyncError(
         const courses = await CourseModel.find()
           .populate("teacher")
           .select(
-            "-courseData -description -tags -level -demoUrl -benefits -prerequisites -reviews -purchased"
+            "-description -tags -level -keyPoints -prerequisites -reviews -chapter"
           );
 
         await redis.set("allCourses", JSON.stringify(courses));

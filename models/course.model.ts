@@ -21,7 +21,7 @@ interface ILink extends Document {
 
 interface ITeacher extends Document {
   fullName: string;
-  profileImage: object;
+  profileImage: string;
   designation: string;
   experience: string;
 }
@@ -50,7 +50,7 @@ interface ICourse extends Document {
   description: string;
   price: number;
   estimatedPrice: number;
-  thumbnail: object;
+  thumbnail: string;
   tags: string;
   level: string;
   demoVideo: string;
@@ -59,7 +59,7 @@ interface ICourse extends Document {
   reviews: IReview[];
   chapter: IChapter[];
   avgRating?: number;
-  purchased?: number;
+  enrolledStudents?: number;
   teacher: ITeacher;
   category: string;
 }
@@ -171,10 +171,7 @@ const courseSchema = new Schema<ICourse>({
     type: String,
     required: true,
   },
-  teacher: {
-    type: Schema.Types.ObjectId,
-    ref: "User",
-  },
+  teacher: teacherSchema,
   keyPoints: [{ title: String }],
   prerequisites: [{ title: String }],
   reviews: [reviewSchema],
@@ -183,7 +180,7 @@ const courseSchema = new Schema<ICourse>({
     type: Number,
     default: 0,
   },
-  purchased: {
+  enrolledStudents: {
     type: Number,
     default: 0,
   },
