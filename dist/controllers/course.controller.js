@@ -83,7 +83,7 @@ exports.getSingleCourse = (0, catchAsyncError_1.CatchAsyncError)((req, res, next
             });
         }
         else {
-            const course = yield course_model_1.default.findById(customCourseId);
+            const course = yield course_model_1.default.findOne({ id: customCourseId });
             if (!course) {
                 return res.status(404).json({ message: "Course not found" });
             }

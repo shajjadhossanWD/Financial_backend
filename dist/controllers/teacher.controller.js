@@ -48,7 +48,7 @@ exports.uploadTeacher = (0, catchAsyncError_1.CatchAsyncError)((req, res, next) 
 exports.getSingleTeacher = (0, catchAsyncError_1.CatchAsyncError)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const teacherId = req.params.id;
-        const teacher = yield teacher_model_1.default.findById(teacherId).lean();
+        const teacher = yield teacher_model_1.default.findOne({ id: teacherId }).lean();
         res.status(200).json({
             success: true,
             teacher,
