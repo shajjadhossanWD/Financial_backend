@@ -52,20 +52,40 @@ const commentSchema = new mongoose_1.Schema({
     question: String,
     questionReplies: Object,
 });
-const courseDataSchema = new mongoose_1.Schema({
-    videoUrl: String,
-    videoSection: String,
-    description: String,
-    videoLength: Number,
+const elementDataSchema = new mongoose_1.Schema({
+    title: String,
+    type: {
+        type: String,
+        required: true,
+        enum: ["video", "document", "quiz"],
+    },
+    content: String,
+    duration: {
+        type: String,
+        default: "5 Min",
+    },
     videoPlayer: String,
     links: [linkSchema],
     suggestions: String,
     questions: [commentSchema],
+    quiz: {
+        type: mongoose_1.default.Schema.Types.ObjectId,
+        ref: "Quiz",
+    },
+});
+const chapterSchema = new mongoose_1.Schema({
+    title: String,
+    elements: [elementDataSchema],
+    totalDuration: {
+        type: String,
+        default: "30 Min",
+    },
 });
 const courseSchema = new mongoose_1.Schema({
     id: {
         type: String,
         unique: true,
+        index: true,
     },
     title: {
         type: String,
@@ -102,30 +122,27 @@ const courseSchema = new mongoose_1.Schema({
         type: String,
         required: true,
     },
-    level: {
-        type: String,
-        required: true,
-    },
-    demoUrl: {
-        type: String,
-        required: true,
-    },
-    teacher: {
-        type: mongoose_1.Schema.Types.ObjectId,
-        ref: "User",
-    },
-    benefits: [{ title: String }],
-    prerequisites: [{ title: String }],
-    reviews: [reviewSchema],
-    courseData: [courseDataSchema],
     avgRating: {
         type: Number,
         default: 0,
     },
-    purchased: {
+    enrolledStudents: {
         type: Number,
         default: 0,
     },
+    level: {
+        type: String,
+        required: true,
+    },
+    demoVideo: {
+        type: String,
+        required: true,
+    },
+    teacher: exports.teacherSchema,
+    keyPoints: [{ title: String }],
+    prerequisites: [{ title: String }],
+    reviews: [reviewSchema],
+    chapter: [chapterSchema],
 });
 // Apply the middleware to the schema with a prefix
 courseSchema.pre("save", (0, customAutoIncrementId_1.default)("id", 100, "C"));
