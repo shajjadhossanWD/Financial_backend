@@ -147,7 +147,7 @@ export const getAllCourses = CatchAsyncError(
 export const getMostPopularCourses = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const isCacheExist = await redis.get("mostPopularCourses");
+      const isCacheExist = await redis.get("PopularCourses");
 
       if (isCacheExist) {
         const courses = JSON.parse(isCacheExist);
@@ -157,14 +157,13 @@ export const getMostPopularCourses = CatchAsyncError(
           courses,
         });
       } else {
-        // Modify the query to filter by the "Most Popular" category
-        const courses = await CourseModel.find({ category: "Most Popular" })
-          .populate("teacher")
-          .select(
-            "-description -tags -level -keyPoints -prerequisites -reviews -chapter"
-          );
+        const courses = await CourseModel.find({
+          category: "Popular Course",
+        }).select(
+          "-description -tags -level -keyPoints -prerequisites -reviews -chapter"
+        );
 
-        await redis.set("mostPopularCourses", JSON.stringify(courses));
+        await redis.set("PopularCourses", JSON.stringify(courses));
 
         res.status(201).json({
           success: true,
