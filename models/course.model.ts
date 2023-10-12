@@ -29,6 +29,7 @@ interface ITeacher extends Document {
 interface IElementData extends Document {
   title: string;
   type: string;
+  // videoId: string;
   content: string;
   duration?: number;
   videoPlayer?: string;
@@ -99,6 +100,12 @@ const elementDataSchema = new Schema<IElementData>({
     enum: ["video", "document", "quiz"],
   },
   content: String,
+
+  // content: {
+  //   otp: { type: String },
+  //   playbackInfo: { type: String },
+  // },
+
   duration: {
     type: String,
     default: "5 Min",

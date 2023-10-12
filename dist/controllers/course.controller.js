@@ -24,6 +24,7 @@ exports.uploadCourse = (0, catchAsyncError_1.CatchAsyncError)((req, res, next) =
     try {
         const data = req.body;
         const thumbnail = data.thumbnail;
+        console.log(data.chapter.elements.videoId);
         // if (thumbnail) {
         //   const myCloud = await cloudinary.v2.uploader.upload(thumbnail, {
         //     folder: "courses",
@@ -39,6 +40,44 @@ exports.uploadCourse = (0, catchAsyncError_1.CatchAsyncError)((req, res, next) =
         return next(new ErrorHandler_1.default(error.message, 400));
     }
 }));
+// export const uploadCourse = CatchAsyncError(
+//   async (req: Request, res: Response, next: NextFunction) => {
+//     try {
+//       const data = req.body;
+//       // const thumbnail = data.thumbnail;
+//       console.log('data');
+//       console.log(data.chapter.elements.videoId);
+//       console.log(data.chapter.elements);
+//       console.log(data);
+//       // Make GET request to the API endpoint
+//       const vId = data.chapter.elements[0].videoId;
+//       const apiUrl = `https://dev.vdocipher.com/api/videos/${vId}/otp`;
+//       const headers = {
+//         Authorization: "Apisecret 18SL2uNsCnOMR1QuojOpKkL5QwOIs4vNMcrWbVO0PdE3fhRwv4cI3C0YwubrIVNq",
+//       };
+//       const response = await axios.get(apiUrl, { headers });
+//       // Access the response data
+//       const { otp, playbackInfo } = response.data;
+//       // Update the data object with the obtained OTP and playbackInfo
+//       data.chapter.elements.content = {
+//         otp,
+//         playbackInfo,
+//       };
+//       // if (thumbnail) {
+//       //   const myCloud = await cloudinary.v2.uploader.upload(thumbnail, {
+//       //     folder: "courses",
+//       //   });
+//       //   data.thumbnail = {
+//       //     public_id: myCloud.public_id,
+//       //     url: myCloud.secure_url,
+//       //   };
+//       // }
+//       createCourse(data, res, next);
+//     } catch (error: any) {
+//       return next(new ErrorHandler(error.message, 400));
+//     }
+//   }
+// );
 // edit course
 exports.editCourse = (0, catchAsyncError_1.CatchAsyncError)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
