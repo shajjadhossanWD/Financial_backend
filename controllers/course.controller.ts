@@ -91,7 +91,7 @@ export const getSingleCourse = CatchAsyncError(
           course,
         });
       } else {
-        const course = await CourseModel.findById(customCourseId);
+        const course = await CourseModel.findOne({ id: customCourseId });
 
         if (!course) {
           return res.status(404).json({ message: "Course not found" });

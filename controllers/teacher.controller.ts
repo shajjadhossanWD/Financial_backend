@@ -44,7 +44,7 @@ export const getSingleTeacher = CatchAsyncError(
     try {
       const teacherId = req.params.id;
 
-      const teacher = await teacherModel.findById(teacherId).lean();
+      const teacher = await teacherModel.findOne({ id: teacherId }).lean();
 
       res.status(200).json({
         success: true,
