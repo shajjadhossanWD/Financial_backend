@@ -3,6 +3,7 @@ import {
   editCourse,
   getAllCourses,
   getCourseByUser,
+  getMostPopularCourses,
   getSingleCourse,
   uploadCourse,
 } from "../controllers/course.controller";
@@ -18,6 +19,7 @@ courseRouter.post(
 );
 
 courseRouter.get("/courses", getAllCourses);
+courseRouter.get("/popular-courses", getMostPopularCourses);
 
 // courseRouter.put("/add-questions", isAuthenticated, addQuestion);
 

@@ -143,6 +143,40 @@ export const getAllCourses = CatchAsyncError(
   }
 );
 
+// get all most popular course
+export const getMostPopularCourses = CatchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const isCacheExist = await redis.get("mostPopularCourses");
+
+      if (isCacheExist) {
+        const courses = JSON.parse(isCacheExist);
+
+        res.status(200).json({
+          success: true,
+          courses,
+        });
+      } else {
+        // Modify the query to filter by the "Most Popular" category
+        const courses = await CourseModel.find({ category: "Most Popular" })
+          .populate("teacher")
+          .select(
+            "-description -tags -level -keyPoints -prerequisites -reviews -chapter"
+          );
+
+        await redis.set("mostPopularCourses", JSON.stringify(courses));
+
+        res.status(201).json({
+          success: true,
+          courses,
+        });
+      }
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 400));
+    }
+  }
+);
+
 // get course content -- only for valid users
 
 export const getCourseByUser = CatchAsyncError(

@@ -163,6 +163,14 @@ const courseSchema = new Schema<ICourse>({
     type: String,
     required: true,
   },
+  avgRating: {
+    type: Number,
+    default: 0,
+  },
+  enrolledStudents: {
+    type: Number,
+    default: 0,
+  },
   level: {
     type: String,
     required: true,
@@ -176,14 +184,6 @@ const courseSchema = new Schema<ICourse>({
   prerequisites: [{ title: String }],
   reviews: [reviewSchema],
   chapter: [chapterSchema],
-  avgRating: {
-    type: Number,
-    default: 0,
-  },
-  enrolledStudents: {
-    type: Number,
-    default: 0,
-  },
 });
 
 // Apply the middleware to the schema with a prefix
