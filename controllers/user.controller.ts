@@ -259,6 +259,7 @@ export const updateAccessToken = CatchAsyncError(
   }
 );
 
+
 // get user info
 export const getUserInfo = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -449,3 +450,70 @@ export const updateProfilePicture = CatchAsyncError(
     }
   }
 );
+
+
+export const getAllUsers = async (req: Request, res: Response) => {
+  try {
+    const users = await userModel.find();
+    
+    // Return the users
+    res.status(200).json({
+      success: true,
+      data: users,
+    });
+  } catch (error: any) {
+    // Handle any errors
+    res.status(error.statusCode || 500).json({
+      success: false,
+      message: error.message || "Internal Server Error",
+    });
+  }
+};
+
+
+export const deleteUserById = async (req: Request, res: Response) => {
+  try {
+    const userId = req.params.id;
+    
+    // Check if the user exists
+    const user = await userModel.findById(userId);
+    if (!user) {
+      throw new ErrorHandler("User not found", 404);
+    }
+    
+    // Delete the user
+    await userModel.findByIdAndDelete(userId);
+    
+    // Return success response
+    res.status(200).json({
+      success: true,
+      message: "User deleted successfully",
+    });
+  } catch (error: any) {
+    // Handle any errors
+    res.status(error.statusCode || 500).json({
+      success: false,
+      message: error.message || "Internal Server Error",
+    });
+  }
+};
+
+
+
+export const deleteAllUsers = async (req: Request, res: Response) => {
+  try {
+    await userModel.deleteMany();
+    
+    // Return success response
+    res.status(200).json({
+      success: true,
+      message: "All users deleted successfully",
+    });
+  } catch (error) {
+    // Handle any errors
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+};

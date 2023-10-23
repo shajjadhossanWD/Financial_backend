@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateProfilePicture = exports.updatePassword = exports.updateUserInfo = exports.socialAuth = exports.getUserInfo = exports.updateAccessToken = exports.logoutUser = exports.loginUser = exports.activateUser = exports.createActivationToken = exports.registrationUser = void 0;
+exports.deleteAllUsers = exports.deleteUserById = exports.getAllUsers = exports.updateProfilePicture = exports.updatePassword = exports.updateUserInfo = exports.socialAuth = exports.getUserInfo = exports.updateAccessToken = exports.logoutUser = exports.loginUser = exports.activateUser = exports.createActivationToken = exports.registrationUser = void 0;
 require("dotenv").config();
 const user_model_1 = __importDefault(require("../models/user.model"));
 const ErrorHandler_1 = __importDefault(require("../utils/ErrorHandler"));
@@ -310,3 +310,64 @@ exports.updateProfilePicture = (0, catchAsyncError_1.CatchAsyncError)((req, res,
         return next(new ErrorHandler_1.default(error.message, 400));
     }
 }));
+const getAllUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const users = yield user_model_1.default.find();
+        // Return the users
+        res.status(200).json({
+            success: true,
+            data: users,
+        });
+    }
+    catch (error) {
+        // Handle any errors
+        res.status(error.statusCode || 500).json({
+            success: false,
+            message: error.message || "Internal Server Error",
+        });
+    }
+});
+exports.getAllUsers = getAllUsers;
+const deleteUserById = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const userId = req.params.id;
+        // Check if the user exists
+        const user = yield user_model_1.default.findById(userId);
+        if (!user) {
+            throw new ErrorHandler_1.default("User not found", 404);
+        }
+        // Delete the user
+        yield user_model_1.default.findByIdAndDelete(userId);
+        // Return success response
+        res.status(200).json({
+            success: true,
+            message: "User deleted successfully",
+        });
+    }
+    catch (error) {
+        // Handle any errors
+        res.status(error.statusCode || 500).json({
+            success: false,
+            message: error.message || "Internal Server Error",
+        });
+    }
+});
+exports.deleteUserById = deleteUserById;
+const deleteAllUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        yield user_model_1.default.deleteMany();
+        // Return success response
+        res.status(200).json({
+            success: true,
+            message: "All users deleted successfully",
+        });
+    }
+    catch (error) {
+        // Handle any errors
+        res.status(500).json({
+            success: false,
+            message: "Internal Server Error",
+        });
+    }
+});
+exports.deleteAllUsers = deleteAllUsers;
