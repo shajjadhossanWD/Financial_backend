@@ -60,6 +60,8 @@ const elementDataSchema = new mongoose_1.Schema({
         enum: ["video", "document", "quiz"],
     },
     content: String,
+    otp: String,
+    playbackInfo: String,
     // content: {
     //   otp: { type: String },
     //   playbackInfo: { type: String },

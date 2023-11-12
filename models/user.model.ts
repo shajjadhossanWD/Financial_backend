@@ -1,8 +1,7 @@
 require("dotenv").config();
-import mongoose, { Document, Model, Schema } from "mongoose";
+import mongoose, { Document, Model, Schema, Types } from "mongoose";
 import bcrypt from "bcryptjs";
 import jwt, { Secret } from "jsonwebtoken";
-import { teacherSchema } from "./course.model";
 
 const emailRegexPattern: RegExp =
   /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
@@ -17,8 +16,6 @@ export interface IUser extends Document {
   };
   role: string;
   isVerified: boolean;
-  teacherDetails?: object;
-  courses: Array<{ courseId: string }>;
   comparePassword: (password: string) => Promise<boolean>;
   SignAccessToken: () => string;
   SignRefreshToken: () => string;
@@ -43,7 +40,6 @@ const userSchema: Schema<IUser> = new mongoose.Schema(
     },
     password: {
       type: String,
-      // required: [true, "Please enter your password"],
       minlength: [6, "Password must be at least 6 characters long"],
       select: false,
     },
@@ -59,12 +55,7 @@ const userSchema: Schema<IUser> = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    courses: [
-      {
-        courseId: String,
-      },
-    ],
-    teacherDetails: teacherSchema,
+
   },
   {
     timestamps: true,
@@ -83,7 +74,7 @@ userSchema.pre<IUser>("save", async function (next) {
 // sign access token
 userSchema.methods.SignAccessToken = function () {
   return jwt.sign({ id: this._id }, process.env.ACCESS_TOKEN || "", {
-    expiresIn: "5m",
+    expiresIn: "1d",
   });
 };
 

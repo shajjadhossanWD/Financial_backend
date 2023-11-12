@@ -27,6 +27,7 @@ const cloudinary_1 = __importDefault(require("cloudinary"));
 const user_service_1 = require("../services/user.service");
 exports.registrationUser = (0, catchAsyncError_1.CatchAsyncError)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        console.log('hitttedddddddddddddddddddddd');
         const { name, email, password } = req.body;
         const isEmailExist = yield user_model_1.default.findOne({ email });
         if (isEmailExist) {
@@ -68,7 +69,7 @@ const createActivationToken = (user) => {
         user,
         activationCode,
     }, process.env.ACTIVATION_SECRET, {
-        expiresIn: "5m",
+        expiresIn: "24h",
     });
     return { token, activationCode };
 };
@@ -149,7 +150,8 @@ exports.logoutUser = (0, catchAsyncError_1.CatchAsyncError)((req, res, next) => 
 // update access token
 exports.updateAccessToken = (0, catchAsyncError_1.CatchAsyncError)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const refresh_token = req.cookies.refresh_token;
+        // const refresh_token = req.cookies.refresh_token as string;
+        const refresh_token = req.header("Authorization");
         const decoded = jsonwebtoken_1.default.verify(refresh_token, process.env.REFRESH_TOKEN);
         if (!decoded) {
             return next(new ErrorHandler_1.default("Could not refresh the token", 400));
@@ -166,8 +168,8 @@ exports.updateAccessToken = (0, catchAsyncError_1.CatchAsyncError)((req, res, ne
             expiresIn: "7d",
         });
         req.user = user;
-        res.cookie("access_token", accessToken, jwt_1.accessTokenOptions);
-        res.cookie("refresh_token", refreshToken, jwt_1.refreshTokenOptions);
+        // res.cookie("access_token", accessToken, accessTokenOptions);
+        // res.cookie("refresh_token", refreshToken, refreshTokenOptions);
         res.status(200).json({
             status: "success",
             accessToken,
@@ -208,7 +210,7 @@ exports.socialAuth = (0, catchAsyncError_1.CatchAsyncError)((req, res, next) => 
 exports.updateUserInfo = (0, catchAsyncError_1.CatchAsyncError)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _c;
     try {
-        const { email, name, teacherDetails, role } = req.body;
+        const { email, name } = req.body;
         const userId = (_c = req.user) === null || _c === void 0 ? void 0 : _c._id;
         const user = yield user_model_1.default.findById(userId);
         if (email && user) {
@@ -220,12 +222,6 @@ exports.updateUserInfo = (0, catchAsyncError_1.CatchAsyncError)((req, res, next)
         }
         if (name && user) {
             user.name = name;
-        }
-        if (role && user) {
-            user.role = role;
-        }
-        if (teacherDetails && user) {
-            user.teacherDetails = teacherDetails;
         }
         yield (user === null || user === void 0 ? void 0 : user.save());
         // update redis also

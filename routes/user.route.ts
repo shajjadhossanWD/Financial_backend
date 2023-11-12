@@ -12,7 +12,7 @@ import {
   updateUserInfo,
   getAllUsers,
   deleteUserById,
-  deleteAllUsers
+  deleteAllUsers,
 } from "../controllers/user.controller";
 import { authorizeRoles, isAuthenticated } from "../middleware/auth";
 

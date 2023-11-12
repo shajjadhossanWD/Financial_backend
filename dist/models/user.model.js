@@ -16,7 +16,6 @@ require("dotenv").config();
 const mongoose_1 = __importDefault(require("mongoose"));
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-const course_model_1 = require("./course.model");
 const emailRegexPattern = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 const userSchema = new mongoose_1.default.Schema({
     name: {
@@ -36,7 +35,6 @@ const userSchema = new mongoose_1.default.Schema({
     },
     password: {
         type: String,
-        // required: [true, "Please enter your password"],
         minlength: [6, "Password must be at least 6 characters long"],
         select: false,
     },
@@ -52,12 +50,6 @@ const userSchema = new mongoose_1.default.Schema({
         type: Boolean,
         default: false,
     },
-    courses: [
-        {
-            courseId: String,
-        },
-    ],
-    teacherDetails: course_model_1.teacherSchema,
 }, {
     timestamps: true,
 });
@@ -74,7 +66,7 @@ userSchema.pre("save", function (next) {
 // sign access token
 userSchema.methods.SignAccessToken = function () {
     return jsonwebtoken_1.default.sign({ id: this._id }, process.env.ACCESS_TOKEN || "", {
-        expiresIn: "5m",
+        expiresIn: "1d",
     });
 };
 // sign refresh token

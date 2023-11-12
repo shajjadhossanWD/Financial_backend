@@ -12,9 +12,12 @@ import {
   refreshTokenOptions,
   sendToken,
 } from "../utils/jwt";
+
+
 import { redis } from "../utils/redis";
 import cloudinary from "cloudinary";
 import { getUserById } from "../services/user.service";
+import { Types } from "mongoose";
 
 // register user
 interface IRegistrationBody {
@@ -27,6 +30,7 @@ interface IRegistrationBody {
 export const registrationUser = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
+      console.log('hitttedddddddddddddddddddddd')
       const { name, email, password } = req.body;
 
       const isEmailExist = await userModel.findOne({ email });
@@ -88,7 +92,7 @@ export const createActivationToken = (user: any): IActivationToken => {
     },
     process.env.ACTIVATION_SECRET as Secret,
     {
-      expiresIn: "5m",
+      expiresIn: "24h",
     }
   );
 
@@ -208,7 +212,8 @@ export const logoutUser = CatchAsyncError(
 export const updateAccessToken = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const refresh_token = req.cookies.refresh_token as string;
+      // const refresh_token = req.cookies.refresh_token as string;
+      const refresh_token = req.header("Authorization") as string;
 
       const decoded = jwt.verify(
         refresh_token,
@@ -245,9 +250,9 @@ export const updateAccessToken = CatchAsyncError(
 
       req.user = user;
 
-      res.cookie("access_token", accessToken, accessTokenOptions);
+      // res.cookie("access_token", accessToken, accessTokenOptions);
 
-      res.cookie("refresh_token", refreshToken, refreshTokenOptions);
+      // res.cookie("refresh_token", refreshToken, refreshTokenOptions);
 
       res.status(200).json({
         status: "success",
@@ -258,7 +263,6 @@ export const updateAccessToken = CatchAsyncError(
     }
   }
 );
-
 
 // get user info
 export const getUserInfo = CatchAsyncError(
@@ -304,14 +308,13 @@ export const socialAuth = CatchAsyncError(
 interface IUpdateUserInfo {
   name?: string;
   email?: string;
-  teacherDetails?: object;
-  role?: string;
 }
 
 export const updateUserInfo = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { email, name, teacherDetails, role } = req.body as IUpdateUserInfo;
+      const { email, name } =
+        req.body as IUpdateUserInfo;
 
       const userId = req.user?._id;
 
@@ -327,14 +330,6 @@ export const updateUserInfo = CatchAsyncError(
 
       if (name && user) {
         user.name = name;
-      }
-
-      if (role && user) {
-        user.role = role;
-      }
-
-      if (teacherDetails && user) {
-        user.teacherDetails = teacherDetails;
       }
 
       await user?.save();
@@ -452,10 +447,11 @@ export const updateProfilePicture = CatchAsyncError(
 );
 
 
+
 export const getAllUsers = async (req: Request, res: Response) => {
   try {
     const users = await userModel.find();
-    
+
     // Return the users
     res.status(200).json({
       success: true,
@@ -474,16 +470,16 @@ export const getAllUsers = async (req: Request, res: Response) => {
 export const deleteUserById = async (req: Request, res: Response) => {
   try {
     const userId = req.params.id;
-    
+
     // Check if the user exists
     const user = await userModel.findById(userId);
     if (!user) {
       throw new ErrorHandler("User not found", 404);
     }
-    
+
     // Delete the user
     await userModel.findByIdAndDelete(userId);
-    
+
     // Return success response
     res.status(200).json({
       success: true,
@@ -498,12 +494,10 @@ export const deleteUserById = async (req: Request, res: Response) => {
   }
 };
 
-
-
 export const deleteAllUsers = async (req: Request, res: Response) => {
   try {
     await userModel.deleteMany();
-    
+
     // Return success response
     res.status(200).json({
       success: true,

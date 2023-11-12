@@ -11,38 +11,15 @@ const cors_1 = __importDefault(require("cors"));
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const error_1 = require("./middleware/error");
 const user_route_1 = __importDefault(require("./routes/user.route"));
-const course_route_1 = __importDefault(require("./routes/course.route"));
-const teacher_route_1 = __importDefault(require("./routes/teacher.route"));
+const financila_data_route_1 = __importDefault(require("./routes/financila-data.route"));
 // body parser
 exports.app.use(express_1.default.json({ limit: "50mb" }));
 // cookie parser
 exports.app.use((0, cookie_parser_1.default)());
-// cors
-// app.use(
-//   cors({
-//     origin: process.env.ORIGIN,
-//   })
-// );
 exports.app.use((0, cors_1.default)());
-// const allowedOrigins = [
-//   "http://localhost:65144",
-//   "https://dev.kvillagebd.com",
-// ];
-// const corsOptions = {
-//   origin: function (origin:any, callback:any) {
-//     if (allowedOrigins.includes(origin) || !origin) {
-//       callback(null, true);
-//     } else {
-//       callback(new Error("Not allowed by CORS"));
-//     }
-//   },
-//   credentials: true, // Allow credentials (e.g., cookies) to be sent with the request
-// };
-// app.use(cors(corsOptions));
 // routes
 exports.app.use("/api/v1", user_route_1.default);
-exports.app.use("/api/v1", course_route_1.default);
-exports.app.use("/api/v1", teacher_route_1.default);
+exports.app.use("/api/v1", financila_data_route_1.default);
 // testing api
 exports.app.get("/test", (req, res, next) => {
     res.status(200).json({

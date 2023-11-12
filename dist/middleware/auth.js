@@ -20,7 +20,7 @@ const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const redis_1 = require("../utils/redis");
 // authenticated user
 exports.isAuthenticated = (0, catchAsyncError_1.CatchAsyncError)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const access_token = req.cookies.access_token;
+    const access_token = req.header("Authorization");
     if (!access_token) {
         return next(new ErrorHandler_1.default("Please Login to access the resource", 400));
     }

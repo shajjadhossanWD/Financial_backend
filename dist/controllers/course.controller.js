@@ -19,50 +19,14 @@ const cloudinary_1 = __importDefault(require("cloudinary"));
 const course_service_1 = require("../services/course.service");
 const course_model_1 = __importDefault(require("../models/course.model"));
 const redis_1 = require("../utils/redis");
+const axios_1 = __importDefault(require("axios"));
 // upload course
-exports.uploadCourse = (0, catchAsyncError_1.CatchAsyncError)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const data = req.body;
-        const thumbnail = data.thumbnail;
-        console.log(data.chapter.elements.videoId);
-        // if (thumbnail) {
-        //   const myCloud = await cloudinary.v2.uploader.upload(thumbnail, {
-        //     folder: "courses",
-        //   });
-        //   data.thumbnail = {
-        //     public_id: myCloud.public_id,
-        //     url: myCloud.secure_url,
-        //   };
-        // }
-        (0, course_service_1.createCourse)(data, res, next);
-    }
-    catch (error) {
-        return next(new ErrorHandler_1.default(error.message, 400));
-    }
-}));
 // export const uploadCourse = CatchAsyncError(
 //   async (req: Request, res: Response, next: NextFunction) => {
 //     try {
 //       const data = req.body;
-//       // const thumbnail = data.thumbnail;
-//       console.log('data');
-//       console.log(data.chapter.elements.videoId);
-//       console.log(data.chapter.elements);
-//       console.log(data);
-//       // Make GET request to the API endpoint
-//       const vId = data.chapter.elements[0].videoId;
-//       const apiUrl = `https://dev.vdocipher.com/api/videos/${vId}/otp`;
-//       const headers = {
-//         Authorization: "Apisecret 18SL2uNsCnOMR1QuojOpKkL5QwOIs4vNMcrWbVO0PdE3fhRwv4cI3C0YwubrIVNq",
-//       };
-//       const response = await axios.get(apiUrl, { headers });
-//       // Access the response data
-//       const { otp, playbackInfo } = response.data;
-//       // Update the data object with the obtained OTP and playbackInfo
-//       data.chapter.elements.content = {
-//         otp,
-//         playbackInfo,
-//       };
+//       const thumbnail = data.thumbnail;
+//       console.log(data.chapter.elements.videoId)
 //       // if (thumbnail) {
 //       //   const myCloud = await cloudinary.v2.uploader.upload(thumbnail, {
 //       //     folder: "courses",
@@ -78,6 +42,44 @@ exports.uploadCourse = (0, catchAsyncError_1.CatchAsyncError)((req, res, next) =
 //     }
 //   }
 // );
+exports.uploadCourse = (0, catchAsyncError_1.CatchAsyncError)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const data = req.body;
+        // const thumbnail = data.thumbnail;
+        console.log('data');
+        console.log(data.chapter.elements[0].videoId);
+        console.log(data.chapter.elements[0]);
+        console.log(data);
+        // Make GET request to the API endpoint
+        const vId = data.chapter.elements[0].videoId;
+        const apiUrl = `https://dev.vdocipher.com/api/videos/${vId}/otp`;
+        const headers = {
+            Authorization: "Apisecret 18SL2uNsCnOMR1QuojOpKkL5QwOIs4vNMcrWbVO0PdE3fhRwv4cI3C0YwubrIVNq",
+        };
+        const response = yield axios_1.default.post(apiUrl, { headers });
+        // Access the response data
+        const { otp, playbackInfo } = response.data;
+        console.log(otp, playbackInfo);
+        // Update the data object with the obtained OTP and playbackInfo
+        data.chapter.elements[0] = {
+            otp,
+            playbackInfo,
+        };
+        // if (thumbnail) {
+        //   const myCloud = await cloudinary.v2.uploader.upload(thumbnail, {
+        //     folder: "courses",
+        //   });
+        //   data.thumbnail = {
+        //     public_id: myCloud.public_id,
+        //     url: myCloud.secure_url,
+        //   };
+        // }
+        (0, course_service_1.createCourse)(data, res, next);
+    }
+    catch (error) {
+        return next(new ErrorHandler_1.default(error.message, 400));
+    }
+}));
 // edit course
 exports.editCourse = (0, catchAsyncError_1.CatchAsyncError)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {

@@ -22,18 +22,19 @@ exports.refreshTokenOptions = {
 const sendToken = (user, statusCode, res) => {
     const accessToken = user.SignAccessToken();
     const refreshToken = user.SignRefreshToken();
-    // upload session top redis
+    // upload session to redis
     redis_1.redis.set(user._id, JSON.stringify(user));
     // only set secure to true in production
     if (process.env.NODE_ENV === "production") {
         exports.accessTokenOptions.secure = true;
     }
-    res.cookie("access_token", accessToken, exports.accessTokenOptions);
-    res.cookie("refresh_token", refreshToken, exports.refreshTokenOptions);
+    // res.cookie("access_token", accessToken, accessTokenOptions);
+    // res.cookie("refresh_token", refreshToken, refreshTokenOptions);
     res.status(statusCode).json({
         success: true,
         user,
         accessToken,
+        refreshToken,
     });
 };
 exports.sendToken = sendToken;
