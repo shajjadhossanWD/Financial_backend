@@ -46,7 +46,7 @@ const calculateScore = (income: number, expenses: number, debts: number, assets:
  export const getAllFinancialData = CatchAsyncError(
     async (req: Request, res: Response) => {
       try {
-        const allFinancialData = await FinancialData.find();
+        const allFinancialData = await FinancialData.find().sort({ createdAt: -1 });
         res.json(allFinancialData);
       } catch (error) {
         console.error(error);
@@ -74,4 +74,29 @@ const calculateScore = (income: number, expenses: number, debts: number, assets:
     }
   );
   
+
+
+  export const getFinancialDataByMonth = CatchAsyncError(
+    async (req: Request, res: Response) => {
+      try {
+        const { email } = req.params;
+        const financialData = await FinancialData.find({ email });
+        if (!financialData) {
+          return res.status(404).json({ error: 'Financial data not found for the specified email' });
+        }
+        
+        const result = financialData.map((data: any) => {
+          return {
+            score: data.score,
+            month: data.month
+          };
+        });
+  
+        res.json(result);
+      } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
+      }
+    }
+  );
   

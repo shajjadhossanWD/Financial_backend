@@ -2,7 +2,8 @@ import express from "express";
 import {
     calculateFinancialHealth,
     getAllFinancialData,
-    getFinancialDataByEmail
+    getFinancialDataByEmail,
+    getFinancialDataByMonth
 } from "../controllers/financialData.controller";
 
 import { authorizeRoles, isAuthenticated } from "../middleware/auth";
@@ -17,6 +18,7 @@ financialDataRouter.post(
  );
  financialDataRouter.get("/financial-data", getAllFinancialData);
  financialDataRouter.get("/financial-data/:email", getFinancialDataByEmail);
+ financialDataRouter.get("/financial-data/cart/:email", getFinancialDataByMonth);
 
 
 export default financialDataRouter;

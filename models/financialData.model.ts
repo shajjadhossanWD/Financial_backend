@@ -9,6 +9,7 @@ interface FinancialData extends Document {
   month: string;
   year: string;
   email: string;
+  createdAt: Date;
 }
 
 const FinancialDataSchema: Schema = new Schema({
@@ -45,6 +46,10 @@ const FinancialDataSchema: Schema = new Schema({
     type: String, 
     required: true 
   },
+  createdAt: { 
+    type: Date, 
+    default: Date.now 
+  }
 });
 
 export default mongoose.model<FinancialData>('FinancialData', FinancialDataSchema);
