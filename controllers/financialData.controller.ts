@@ -5,14 +5,20 @@ import { CatchAsyncError } from "../middleware/catchAsyncError";
 export const calculateFinancialHealth = CatchAsyncError(
 async (req: Request, res: Response) => {
   try {
-    const { income, expenses, debts, assets } = req.body;
+    const { income, expenses, debts, assets, month, year } = req.body;
+
+    const email = req.user.email;
+
 
     // Save financial data to MongoDB
-    const financialData = new FinancialData({ income, expenses, debts, assets });
-    await financialData.save();
+    const financialData = new FinancialData({ income, expenses, debts, assets, email, month, year });
 
-    // Implement financial health score calculation logic here
     const financialHealthScore = calculateScore(income, expenses, debts, assets);
+
+    financialData.score = financialHealthScore;
+    await financialData.save();
+    console.log("financialHealthScore", financialHealthScore)
+
 
     res.json({ score: financialHealthScore });
   } catch (error) {
@@ -23,10 +29,19 @@ async (req: Request, res: Response) => {
 );
 
 
+
 const calculateScore = (income: number, expenses: number, debts: number, assets: number): number => {
   // Simple Financial Health Score Calculation
+  console.log('nettttttt : ' , income)
+  console.log('nettttttt : ' , expenses)
+  console.log('nettttttt : ' , debts)
+  console.log('nettttttt : ' , assets)
+
   const netIncome = income - expenses;
-  const totalLiabilities = debts + assets;
+  console.log('nettttttt : ' , netIncome)
+
+  const totalLiabilities = Number(debts) + Number(assets);
+  console.log('totalLiabilities : ' , totalLiabilities)
 
   if (totalLiabilities === 0) {
     // Avoid division by zero
@@ -34,6 +49,41 @@ const calculateScore = (income: number, expenses: number, debts: number, assets:
   }
 
   const financialHealthScore = (netIncome / totalLiabilities) * 100;
-  return Math.round(financialHealthScore); // Round to the nearest integer
+  console.log("financialHealthScore", financialHealthScore)
+  return Math.round(financialHealthScore); 
 
   }
+
+
+ export const getAllFinancialData = CatchAsyncError(
+    async (req: Request, res: Response) => {
+      try {
+        const allFinancialData = await FinancialData.find();
+        res.json(allFinancialData);
+      } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
+      }
+    }
+  );
+
+
+  export const getFinancialDataByEmail = CatchAsyncError(
+    async (req: Request, res: Response) => {
+      try {
+        const { email } = req.params; 
+        const financialData = await FinancialData.find({ email });
+  
+        if (!financialData) {
+          return res.status(404).json({ error: 'Financial data not found for the specified email' });
+        }
+  
+        res.json(financialData);
+      } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
+      }
+    }
+  );
+  
+  

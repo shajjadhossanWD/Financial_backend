@@ -1,6 +1,8 @@
 import express from "express";
 import {
-    calculateFinancialHealth
+    calculateFinancialHealth,
+    getAllFinancialData,
+    getFinancialDataByEmail
 } from "../controllers/financialData.controller";
 
 import { authorizeRoles, isAuthenticated } from "../middleware/auth";
@@ -13,6 +15,8 @@ financialDataRouter.post(
  authorizeRoles("user"),
  calculateFinancialHealth
  );
+ financialDataRouter.get("/financial-data", getAllFinancialData);
+ financialDataRouter.get("/financial-data/:email", getFinancialDataByEmail);
 
 
 export default financialDataRouter;

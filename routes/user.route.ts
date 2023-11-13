@@ -28,7 +28,7 @@ userRouter.get("/logout", isAuthenticated, logoutUser);
 
 userRouter.get("/refresh-token", updateAccessToken);
 
-userRouter.get("/me", isAuthenticated, getUserInfo);
+userRouter.get("/me", authorizeRoles('user'), isAuthenticated, getUserInfo);
 
 userRouter.post("/social-auth", socialAuth);
 
