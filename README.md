@@ -6,8 +6,8 @@ Welcome to the backend of the Financial Health Score App! This TypeScript Node.j
 
 1. **Clone the Repository:**
    ```bash
-   git clone https://github.com/your-username/financial-health-backend.git
-   cd financial-health-backend
+   git clone https://github.com/shajjadhossanWD/Financial_backend.git
+   cd Financial_backend
    ```
 
 2. **Install Dependencies:**
@@ -19,11 +19,7 @@ Welcome to the backend of the Financial Health Score App! This TypeScript Node.j
    Create a `.env` file in the root directory and add the following variables:
 
    ```env
-   PORT=3001
-   MONGODB_URI=your_mongodb_connection_string
-   JWT_SECRET=your_jwt_secret_key
-   SMTP_EMAIL=your_smtp_email
-   SMTP_PASSWORD=your_smtp_password
+   .env file data i'll provide in doc
    ```
 
 ## Features
