@@ -9,7 +9,6 @@ async (req: Request, res: Response) => {
 
     const email = req.user.email;
 
-
     // Save financial data to MongoDB
     const financialData = new FinancialData({ income, expenses, debts, assets, email, month, year });
 
@@ -17,7 +16,6 @@ async (req: Request, res: Response) => {
 
     financialData.score = financialHealthScore;
     await financialData.save();
-    console.log("financialHealthScore", financialHealthScore)
 
 
     res.json({ score: financialHealthScore });
@@ -32,16 +30,8 @@ async (req: Request, res: Response) => {
 
 const calculateScore = (income: number, expenses: number, debts: number, assets: number): number => {
   // Simple Financial Health Score Calculation
-  console.log('nettttttt : ' , income)
-  console.log('nettttttt : ' , expenses)
-  console.log('nettttttt : ' , debts)
-  console.log('nettttttt : ' , assets)
-
   const netIncome = income - expenses;
-  console.log('nettttttt : ' , netIncome)
-
   const totalLiabilities = Number(debts) + Number(assets);
-  console.log('totalLiabilities : ' , totalLiabilities)
 
   if (totalLiabilities === 0) {
     // Avoid division by zero
@@ -49,9 +39,7 @@ const calculateScore = (income: number, expenses: number, debts: number, assets:
   }
 
   const financialHealthScore = (netIncome / totalLiabilities) * 100;
-  console.log("financialHealthScore", financialHealthScore)
   return Math.round(financialHealthScore); 
-
   }
 
 
